@@ -1,0 +1,19 @@
+# 编译产物
+wanyu_arm64
+*.o
+*.obj
+
+# 临时文件
+*.tmp
+*.swp
+*~
+
+# 敏感配置 (如果有)
+*.env
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store

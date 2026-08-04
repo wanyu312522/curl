@@ -1,0 +1,62 @@
+name: Build Kernel Module
+
+on:
+  push:
+    branches: [master, main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Android NDK
+        run: |
+          set -e
+          curl -L --retry 3 --retry-delay 10 \
+            "https://dl.google.com/android/repository/android-ndk-r27d-linux.zip" \
+            -o ndk.zip
+          unzip -q ndk.zip
+          rm ndk.zip
+          echo "NDK=$PWD/android-ndk-r27d" >> $GITHUB_ENV
+          echo "$PWD/android-ndk-r27d/toolchains/llvm/prebuilt/linux-x86_64/bin" >> $GITHUB_PATH
+          ls $PWD/android-ndk-r27d/toolchains/llvm/prebuilt/linux-x86_64/bin/clang && echo "NDK OK"
+
+      - name: Clone Android Common Kernel
+        run: |
+          git clone --depth 1 --branch android14-6.1-lts \
+            https://android.googlesource.com/kernel/common kernel_src 2>&1 || \
+          git clone --depth 1 --branch android14-6.1 \
+            https://android.googlesource.com/kernel/common kernel_src 2>&1
+          ls kernel_src/Makefile && echo "Kernel source OK"
+        timeout-minutes: 15
+
+      - name: Prepare Kernel Source
+        run: |
+          set -e
+          cd kernel_src
+          make ARCH=arm64 LLVM=1 defconfig
+          make ARCH=arm64 LLVM=1 modules_prepare -j2
+        timeout-minutes: 20
+
+      - name: Build Module
+        run: |
+          set -e
+          make -C kernel_src \
+            ARCH=arm64 LLVM=1 \
+            M=$PWD/rwProcMem33Module/rwProcMem_module \
+            -j2
+        timeout-minutes: 5
+
+      - name: Show result
+        run: |
+          echo "=== Built modules ==="
+          find rwProcMem33Module -name "*.ko" -ls
+
+      - name: Upload .ko
+        uses: actions/upload-artifact@v4
+        with:
+          name: rwProcMem_module.ko
+          path: rwProcMem33Module/rwProcMem_module/*.ko
