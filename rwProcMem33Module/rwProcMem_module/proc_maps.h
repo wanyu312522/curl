@@ -9,7 +9,7 @@
 #include <linux/sched/mm.h>
 #endif
 #if MY_LINUX_VERSION_CODE >= KERNEL_VERSION(6,1,0)
-#include <linux/vma_iterator.h>
+#include <linux/maple_tree.h>
 #endif
 
 static inline int down_read_mmap_lock(struct mm_struct *mm);
@@ -234,8 +234,8 @@ static int get_proc_maps_list(bool is_kernel_buf, struct pid* proc_pid_struct, c
 	if (down_read_mmap_lock(mm) != 0) { ret = -EBUSY; goto out_kentry; }
 
 	{
-		VMA_ITERATOR(iter, mm, 0);
-		for_each_vma(iter, vma) {
+		MA_STATE(mas, &mm->mm_mt, 0, 0);
+		mas_for_each(&mas, vma, ULONG_MAX) {
 			struct file *vm_file;
 			if (copy_pos + sizeof(*entry) >= end_pos) break;
 
@@ -313,8 +313,8 @@ static int get_proc_maps_list(bool is_kernel_buf, struct pid* proc_pid_struct, c
 	if (down_read_mmap_lock(mm) != 0) { ret = -EBUSY; goto out_kentry; }
 
 	{
-		VMA_ITERATOR(iter, mm, 0);
-		for_each_vma(iter, vma) {
+		MA_STATE(mas, &mm->mm_mt, 0, 0);
+		mas_for_each(&mas, vma, ULONG_MAX) {
 			struct file *vm_file;
 			struct anon_vma_name *anon_name = NULL;
 			if (copy_pos + sizeof(*entry) >= end_pos) break;

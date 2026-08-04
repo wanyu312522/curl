@@ -3,7 +3,7 @@
 #include "api_proxy.h"
 #include "ver_control.h"
 #if MY_LINUX_VERSION_CODE >= KERNEL_VERSION(6,1,0)
-#include <linux/vma_iterator.h>
+#include <linux/maple_tree.h>
 #endif
 
 
@@ -36,8 +36,8 @@ static int get_mytask_maps_cnt(void) {
 	}
 	#else
 	{
-		VMA_ITERATOR(iter, mm, 0);
-		for_each_vma(iter, vma) {
+		MA_STATE(mas, &mm->mm_mt, 0, 0);
+		mas_for_each(&mas, vma, ULONG_MAX) {
 			cnt++;
 		}
 	}
@@ -187,8 +187,8 @@ static int init_vm_file_offset(void) {
 
 	g_init_vm_file_offset_success = false;
 	{
-		VMA_ITERATOR(iter, mm, 0);
-		for_each_vma(iter, vma) {
+		MA_STATE(mas, &mm->mm_mt, 0, 0);
+		mas_for_each(&mas, vma, ULONG_MAX) {
 			if (is_found_vm_file_offset == 1) {
 				break;
 			}
