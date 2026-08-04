@@ -186,6 +186,16 @@ static ssize_t rwProcMem_read(struct file* filp, char __user* buf, size_t size, 
 }
 
 static int rwProcMem_dev_init(void) {
+	printk(KERN_EMERG "rwProcMem: HELLO (minimal test)\n");
+	return 0;
+}
+
+static void rwProcMem_dev_exit(void) {
+	printk(KERN_EMERG "rwProcMem: GOODBYE\n");
+}
+
+/*
+static int rwProcMem_dev_init(void) {
 	g_rwProcMem_devp = x_kmalloc(sizeof(struct rwProcMemDev), GFP_KERNEL);
 	if (!g_rwProcMem_devp) {
 		printk(KERN_EMERG "rwProcMem: kmalloc failed\n");
@@ -218,6 +228,7 @@ static void rwProcMem_dev_exit(void) {
 	printk(KERN_EMERG "rwProcMem: Goodbye\n");
 }
 
+*/
 int __init init_module(void) { return rwProcMem_dev_init(); }
 void __exit cleanup_module(void) { rwProcMem_dev_exit(); }
 
