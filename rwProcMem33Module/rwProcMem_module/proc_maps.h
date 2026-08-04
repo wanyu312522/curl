@@ -8,6 +8,9 @@
 #include <linux/sched/task.h>
 #include <linux/sched/mm.h>
 #endif
+#if MY_LINUX_VERSION_CODE >= KERNEL_VERSION(6,1,0)
+#include <linux/vma_iterator.h>
+#endif
 
 static inline int down_read_mmap_lock(struct mm_struct *mm);
 static inline int up_read_mmap_lock(struct mm_struct *mm);

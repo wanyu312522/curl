@@ -1,7 +1,10 @@
-﻿#ifndef PROC_MAPS_AUTO_OFFSET_H_
+#ifndef PROC_MAPS_AUTO_OFFSET_H_
 #define PROC_MAPS_AUTO_OFFSET_H_
 #include "api_proxy.h"
 #include "ver_control.h"
+#if MY_LINUX_VERSION_CODE >= KERNEL_VERSION(6,1,0)
+#include <linux/vma_iterator.h>
+#endif
 
 
 #ifndef MM_STRUCT_MMAP_LOCK 

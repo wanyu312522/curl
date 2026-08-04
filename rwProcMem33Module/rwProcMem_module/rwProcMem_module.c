@@ -25,7 +25,7 @@ static ssize_t OnCmdInitDeviceInfo(struct ioctl_request *hdr, char __user* buf) 
 // ========== 打开/关闭进程 ==========
 static ssize_t OnCmdOpenProcess(struct ioctl_request *hdr, char __user* buf) {
 	uint64_t pid = hdr->param1, handle = 0;
-	struct pid * proc_pid_struct = get_proc_pid_struct(pid);
+	struct pid * proc_pid_struct = find_get_pid(pid);
 	if (!proc_pid_struct)
 		return -EINVAL;
 
@@ -37,7 +37,7 @@ static ssize_t OnCmdOpenProcess(struct ioctl_request *hdr, char __user* buf) {
 
 static ssize_t OnCmdCloseProcess(struct ioctl_request *hdr, char __user* buf) {
 	struct pid * proc_pid_struct = (struct pid *)hdr->param1;
-	release_proc_pid_struct(proc_pid_struct);
+	put_pid(proc_pid_struct);
 	return 0;
 }
 
