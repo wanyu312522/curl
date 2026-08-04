@@ -37,8 +37,10 @@ jobs:
         run: |
           set -e
           cd kernel_src
-          make ARCH=arm64 CC=clang CLANG_TRIPLE=aarch64-linux-android21- defconfig 2>&1 | tail -5
-          make ARCH=arm64 CC=clang CLANG_TRIPLE=aarch64-linux-android21- modules_prepare -j2 2>&1 | tail -5
+          make ARCH=arm64 CC=clang CLANG_TRIPLE=aarch64-linux-android21- defconfig
+          scripts/config --enable MODULES
+          make ARCH=arm64 CC=clang CLANG_TRIPLE=aarch64-linux-android21- olddefconfig
+          make ARCH=arm64 CC=clang CLANG_TRIPLE=aarch64-linux-android21- modules_prepare -j2
         timeout-minutes: 20
 
       - name: Build Module
