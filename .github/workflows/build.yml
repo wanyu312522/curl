@@ -26,9 +26,9 @@ jobs:
 
       - name: Clone Android Common Kernel
         run: |
-          git clone --depth 1 --branch android14-6.1-lts \
-            https://android.googlesource.com/kernel/common kernel_src 2>&1 || \
           git clone --depth 1 --branch android14-6.1 \
+            https://android.googlesource.com/kernel/common kernel_src 2>&1 || \
+          git clone --depth 1 --branch android14-6.1-lts \
             https://android.googlesource.com/kernel/common kernel_src 2>&1
           ls kernel_src/Makefile && echo "Kernel source OK"
         timeout-minutes: 15
