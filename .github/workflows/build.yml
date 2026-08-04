@@ -39,6 +39,8 @@ jobs:
           cd kernel_src
           KFLAGS="ARCH=arm64 LLVM=1 CLANG_TRIPLE=aarch64-linux-android21-"
           zcat ../config.gz > .config
+          echo "CONFIG_UNUSED_KSYMS_WHITELIST=n" >> .config
+          echo "CONFIG_TRIM_UNUSED_KSYMS=n" >> .config
           make $KFLAGS olddefconfig
           make $KFLAGS modules_prepare -j2
         timeout-minutes: 20
