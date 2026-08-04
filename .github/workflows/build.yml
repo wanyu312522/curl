@@ -37,17 +37,22 @@ jobs:
         run: |
           set -e
           cd kernel_src
-          make ARCH=arm64 LLVM=1 defconfig
-          make ARCH=arm64 LLVM=1 modules_prepare -j2
+          make ARCH=arm64 CC=clang CLANG_TRIPLE=aarch64-linux-android21- defconfig 2>&1 | tail -5
+          make ARCH=arm64 CC=clang CLANG_TRIPLE=aarch64-linux-android21- modules_prepare -j2 2>&1 | tail -5
         timeout-minutes: 20
 
       - name: Build Module
         run: |
           set -e
           make -C kernel_src \
-            ARCH=arm64 LLVM=1 \
+            ARCH=arm64 CC=clang CLANG_TRIPLE=aarch64-linux-android21- \
             M=$PWD/rwProcMem33Module/rwProcMem_module \
             -j2
+
+      - name: Verify ARM64
+        run: |
+          file rwProcMem33Module/rwProcMem_module/*.ko
+          readelf -h rwProcMem33Module/rwProcMem_module/*.ko | grep -E "Class|Machine"
         timeout-minutes: 5
 
       - name: Show result
