@@ -1,1 +1,2 @@
-﻿obj-m += rwProcMem_module.o
+obj-m += rwProcMem_module.o
+ccflags-y := -fno-stack-protector -fno-asynchronous-unwind-tables
