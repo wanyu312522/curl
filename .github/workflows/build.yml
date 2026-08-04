@@ -37,11 +37,12 @@ jobs:
         run: |
           set -e
           cd kernel_src
-          make ARCH=arm64 CC=clang CLANG_TRIPLE=aarch64-linux-android21- defconfig
+          KFLAGS="ARCH=arm64 CC=clang CLANG_TRIPLE=aarch64-linux-android21-"
+          make $KFLAGS defconfig
           echo "CONFIG_MODULES=y" >> .config
-          make ARCH=arm64 CC=clang CLANG_TRIPLE=aarch64-linux-android21- olddefconfig
-          make ARCH=arm64 CC=clang CLANG_TRIPLE=aarch64-linux-android21- prepare scripts -j2
-          make ARCH=arm64 CC=clang CLANG_TRIPLE=aarch64-linux-android21- modules_prepare -j2
+          echo "CONFIG_COMPAT_VDSO=n" >> .config
+          make $KFLAGS olddefconfig
+          make $KFLAGS modules_prepare -j2
         timeout-minutes: 20
 
       - name: Build Module
