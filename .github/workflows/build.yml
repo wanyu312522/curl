@@ -41,6 +41,9 @@ jobs:
           zcat ../config.gz > .config
           echo "CONFIG_UNUSED_KSYMS_WHITELIST=n" >> .config
           echo "CONFIG_TRIM_UNUSED_KSYMS=n" >> .config
+          echo "CONFIG_DEBUG_INFO_BTF=n" >> .config
+          echo "CONFIG_DEBUG_INFO_DWARF4=n" >> .config
+          echo "CONFIG_DEBUG_INFO_DWARF5=n" >> .config
           make $KFLAGS olddefconfig
           make $KFLAGS modules_prepare -j2
         timeout-minutes: 20
