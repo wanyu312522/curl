@@ -187,6 +187,10 @@ static ssize_t rwProcMem_read(struct file* filp, char __user* buf, size_t size, 
 
 static int rwProcMem_dev_init(void) {
 	g_rwProcMem_devp = x_kmalloc(sizeof(struct rwProcMemDev), GFP_KERNEL);
+	if (!g_rwProcMem_devp) {
+		printk(KERN_EMERG "rwProcMem: kmalloc failed\n");
+		return -ENOMEM;
+	}
 	memset(g_rwProcMem_devp, 0, sizeof(struct rwProcMemDev));
 
 	g_rwProcMem_devp->proc_parent = proc_mkdir(CONFIG_PROC_NODE_AUTH_KEY, NULL);
@@ -195,11 +199,12 @@ static int rwProcMem_dev_init(void) {
 			S_IRUGO | S_IWUGO, g_rwProcMem_devp->proc_parent, &rwProcMem_proc_ops);
 	}
 
-	printk(KERN_EMERG "Hello\n");
+	printk(KERN_EMERG "rwProcMem: Hello\n");
 	return 0;
 }
 
 static void rwProcMem_dev_exit(void) {
+	if (!g_rwProcMem_devp) return;
 	if (g_rwProcMem_devp->proc_entry) {
 		proc_remove(g_rwProcMem_devp->proc_entry);
 		g_rwProcMem_devp->proc_entry = NULL;
@@ -209,7 +214,8 @@ static void rwProcMem_dev_exit(void) {
 		g_rwProcMem_devp->proc_parent = NULL;
 	}
 	kfree(g_rwProcMem_devp);
-	printk(KERN_EMERG "Goodbye\n");
+	g_rwProcMem_devp = NULL;
+	printk(KERN_EMERG "rwProcMem: Goodbye\n");
 }
 
 int __init init_module(void) { return rwProcMem_dev_init(); }

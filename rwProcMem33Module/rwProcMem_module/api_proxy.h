@@ -13,15 +13,15 @@ static inline struct task_struct* x_get_current(void) {
 }
 
 static inline void * x_kmalloc(size_t size, gfp_t flags) {
-	return __kmalloc(size, flags);
+	return kmalloc(size, flags);
 }
 
 static inline unsigned long x_copy_from_user(void *to, const void __user *from, unsigned long n) {
-	return __arch_copy_from_user(to, from, n);
+	return copy_from_user(to, from, n);
 }
 
 static inline unsigned long x_copy_to_user(void __user *to, const void *from, unsigned long n) {
-	return __arch_copy_to_user(to, from, n);
+	return copy_to_user(to, from, n);
 }
 
 #endif /* API_PROXY_H_ */
